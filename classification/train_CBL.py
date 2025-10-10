@@ -156,7 +156,11 @@ if __name__ == "__main__":
                             val_similarity[i][j] = 0.0
         end = time.time()
         print("time of trainng intervention:", (end - start) / 3600, "hours")
-
+        np.save(prefix + "/concept_labels_train_acc.npy", train_similarity)
+        if args.dataset == 'SetFit/sst2':
+        np.save(prefix + "/concept_labels_val_acc.npy", val_similarity)
+        print("✅ Saved corrected concept scores. Skip training CBL.")
+        exit()
     print("creating loader...")
     train_loader = build_loaders(encoded_train_dataset, train_similarity, mode="train")
     if args.dataset == 'SetFit/sst2':
@@ -283,4 +287,5 @@ if __name__ == "__main__":
                 torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
 
     end = time.time()
+
     print("time of training CBL:", (end - start) / 3600, "hours")
