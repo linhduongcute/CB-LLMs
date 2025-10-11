@@ -104,30 +104,30 @@ if __name__ == "__main__":
     concept_set = CFG.concept_set[dataset]
 
     # --- Load CBL / backbone như cũ ---
-    if 'roberta' in backbone:
-        if 'no_backbone' in cbl_name:
-            cbl = CBL(len(concept_set), args.dropout).to(device)
-            cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
-            cbl.eval()
-            preLM = RobertaModel.from_pretrained('roberta-base').to(device)
-            preLM.eval()
-        else:
-            backbone_cbl = RobertaCBL(len(concept_set), args.dropout).to(device)
-            backbone_cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
-            backbone_cbl.eval()
-    elif 'gpt2' in backbone:
-        if 'no_backbone' in cbl_name:
-            cbl = CBL(len(concept_set), args.dropout).to(device)
-            cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
-            cbl.eval()
-            preLM = GPT2Model.from_pretrained('gpt2').to(device)
-            preLM.eval()
-        else:
-            backbone_cbl = GPT2CBL(len(concept_set), args.dropout).to(device)
-            backbone_cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
-            backbone_cbl.eval()
-    else:
-        raise Exception("backbone should be roberta or gpt2")
+    # if 'roberta' in backbone:
+    #     if 'no_backbone' in cbl_name:
+    #         cbl = CBL(len(concept_set), args.dropout).to(device)
+    #         cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
+    #         cbl.eval()
+    #         preLM = RobertaModel.from_pretrained('roberta-base').to(device)
+    #         preLM.eval()
+    #     else:
+    #         backbone_cbl = RobertaCBL(len(concept_set), args.dropout).to(device)
+    #         backbone_cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
+    #         backbone_cbl.eval()
+    # elif 'gpt2' in backbone:
+    #     if 'no_backbone' in cbl_name:
+    #         cbl = CBL(len(concept_set), args.dropout).to(device)
+    #         cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
+    #         cbl.eval()
+    #         preLM = GPT2Model.from_pretrained('gpt2').to(device)
+    #         preLM.eval()
+    #     else:
+    #         backbone_cbl = GPT2CBL(len(concept_set), args.dropout).to(device)
+    #         backbone_cbl.load_state_dict(torch.load(args.cbl_path, map_location=device))
+    #         backbone_cbl.eval()
+    # else:
+    #     raise Exception("backbone should be roberta or gpt2")
 
     print("get concept features...")
     # --- THAY ĐỔI CHÍNH: Load trực tiếp file ACC-corrected ---
@@ -216,3 +216,4 @@ if __name__ == "__main__":
     torch.save(b_g, prefix + 'b_g' + model_name)
     torch.save(W_g_sparse, prefix + 'W_g_sparse' + model_name)
     torch.save(b_g_sparse, prefix + 'b_g_sparse' + model_name)
+
