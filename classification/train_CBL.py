@@ -157,130 +157,143 @@ if __name__ == "__main__":
         end = time.time()
         print("time of trainng intervention:", (end - start) / 3600, "hours")
 
+        # === Save corrected concept activations after ACC ===
+    acc_save_dir = prefix + "/"
+    if not os.path.exists(acc_save_dir):
+        os.makedirs(acc_save_dir)
+
+    np.save(acc_save_dir + "concept_labels_train_acc.npy", train_similarity)
+    print("Saved ACC-corrected train similarity to:", acc_save_dir + "concept_labels_train_acc.npy")
+
+    if args.dataset == 'SetFit/sst2':
+        np.save(acc_save_dir + "concept_labels_val_acc.npy", val_similarity)
+        print("Saved ACC-corrected val similarity to:", acc_save_dir + "concept_labels_val_acc.npy")
+
     print("creating loader...")
     train_loader = build_loaders(encoded_train_dataset, train_similarity, mode="train")
     if args.dataset == 'SetFit/sst2':
         val_loader = build_loaders(encoded_val_dataset, val_similarity, mode="valid")
 
-    if args.backbone == 'roberta':
-        if args.tune_cbl_only:
-            print("preparing CBL only...")
-            cbl = CBL(len(concept_set), args.dropout).to(device)
-            preLM = RobertaModel.from_pretrained('roberta-base').to(device)
-            preLM.eval()
-            optimizer = torch.optim.Adam(cbl.parameters(), lr=1e-4)
-        else:
-            print("preparing backbone(roberta)+CBL...")
-            backbone_cbl = RobertaCBL(len(concept_set), args.dropout).to(device)
-            optimizer = torch.optim.Adam(backbone_cbl.parameters(), lr=5e-6)
-    elif args.backbone == 'gpt2':
-        if args.tune_cbl_only:
-            print("preparing CBL only...")
-            cbl = CBL(len(concept_set), args.dropout).to(device)
-            preLM = GPT2Model.from_pretrained('gpt2').to(device)
-            preLM.eval()
-            optimizer = torch.optim.Adam(cbl.parameters(), lr=1e-4)
-        else:
-            print("preparing backbone(gpt2)+CBL...")
-            backbone_cbl = GPT2CBL(len(concept_set), args.dropout).to(device)
-            optimizer = torch.optim.Adam(backbone_cbl.parameters(), lr=5e-6)
-    else:
-        raise Exception("backbone should be roberta or gpt2")
+    # if args.backbone == 'roberta':
+    #     if args.tune_cbl_only:
+    #         print("preparing CBL only...")
+    #         cbl = CBL(len(concept_set), args.dropout).to(device)
+    #         preLM = RobertaModel.from_pretrained('roberta-base').to(device)
+    #         preLM.eval()
+    #         optimizer = torch.optim.Adam(cbl.parameters(), lr=1e-4)
+    #     else:
+    #         print("preparing backbone(roberta)+CBL...")
+    #         backbone_cbl = RobertaCBL(len(concept_set), args.dropout).to(device)
+    #         optimizer = torch.optim.Adam(backbone_cbl.parameters(), lr=5e-6)
+    # elif args.backbone == 'gpt2':
+    #     if args.tune_cbl_only:
+    #         print("preparing CBL only...")
+    #         cbl = CBL(len(concept_set), args.dropout).to(device)
+    #         preLM = GPT2Model.from_pretrained('gpt2').to(device)
+    #         preLM.eval()
+    #         optimizer = torch.optim.Adam(cbl.parameters(), lr=1e-4)
+    #     else:
+    #         print("preparing backbone(gpt2)+CBL...")
+    #         backbone_cbl = GPT2CBL(len(concept_set), args.dropout).to(device)
+    #         optimizer = torch.optim.Adam(backbone_cbl.parameters(), lr=5e-6)
+    # else:
+    #     raise Exception("backbone should be roberta or gpt2")
 
-    print("start training...")
-    best_loss = float('inf')
+    # print("start training...")
+    # best_loss = float('inf')
 
-    if args.backbone == 'roberta':
-        prefix += 'roberta_cbm'
-    elif args.backbone == 'gpt2':
-        prefix += 'gpt2_cbm'
-    prefix += "/"
-    if not os.path.exists(prefix):
-        os.makedirs(prefix)
+    # if args.backbone == 'roberta':
+    #     prefix += 'roberta_cbm'
+    # elif args.backbone == 'gpt2':
+    #     prefix += 'gpt2_cbm'
+    # prefix += "/"
+    # if not os.path.exists(prefix):
+    #     os.makedirs(prefix)
 
-    model_name = "cbl"
-    if args.tune_cbl_only:
-        model_name += "_no_backbone"
-    if args.automatic_concept_correction:
-        model_name += "_acc"
+    # model_name = "cbl"
+    # if args.tune_cbl_only:
+    #     model_name += "_no_backbone"
+    # if args.automatic_concept_correction:
+    #     model_name += "_acc"
 
-    start = time.time()
-    if args.labeling == 'llm':
-        epochs = 10
-    else:
-        epochs = CFG.cbl_epochs[args.dataset]
-    for e in range(epochs):
-        print("Epoch ", e+1, ":")
-        if args.tune_cbl_only:
-            cbl.train()
-        else:
-            backbone_cbl.train()
-        training_loss = []
-        for i, batch in enumerate(train_loader):
-            batch_text, batch_sim = batch[0], batch[1]
-            batch_text = {k: v.to(device) for k, v in batch_text.items()}
-            batch_sim = batch_sim.to(device)
+    # start = time.time()
+    # if args.labeling == 'llm':
+    #     epochs = 10
+    # else:
+    #     epochs = CFG.cbl_epochs[args.dataset]
+    # for e in range(epochs):
+    #     print("Epoch ", e+1, ":")
+    #     if args.tune_cbl_only:
+    #         cbl.train()
+    #     else:
+    #         backbone_cbl.train()
+    #     training_loss = []
+    #     for i, batch in enumerate(train_loader):
+    #         batch_text, batch_sim = batch[0], batch[1]
+    #         batch_text = {k: v.to(device) for k, v in batch_text.items()}
+    #         batch_sim = batch_sim.to(device)
 
-            if args.tune_cbl_only:
-                with torch.no_grad():
-                    LM_features = preLM(input_ids=batch_text["input_ids"], attention_mask=batch_text["attention_mask"]).last_hidden_state
-                    if args.backbone == 'roberta':
-                        LM_features = LM_features[:, 0, :]
-                    elif args.backbone == 'gpt2':
-                        LM_features = eos_pooling(LM_features, batch_text["attention_mask"])
-                    else:
-                        raise Exception("backbone should be roberta or gpt2")
-                cbl_features = cbl(LM_features)
-            else:
-                cbl_features = backbone_cbl(batch_text)
-            loss = -cos_sim_cubed(cbl_features, batch_sim)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            print("batch ", str(i), " loss: ", loss.detach().cpu().numpy(), end="\r")
-            training_loss.append(loss.detach().cpu().numpy())
-        avg_training_loss = sum(training_loss)/len(training_loss)
-        print("training loss: ", avg_training_loss)
+    #         if args.tune_cbl_only:
+    #             with torch.no_grad():
+    #                 LM_features = preLM(input_ids=batch_text["input_ids"], attention_mask=batch_text["attention_mask"]).last_hidden_state
+    #                 if args.backbone == 'roberta':
+    #                     LM_features = LM_features[:, 0, :]
+    #                 elif args.backbone == 'gpt2':
+    #                     LM_features = eos_pooling(LM_features, batch_text["attention_mask"])
+    #                 else:
+    #                     raise Exception("backbone should be roberta or gpt2")
+    #             cbl_features = cbl(LM_features)
+    #         else:
+    #             cbl_features = backbone_cbl(batch_text)
+    #         loss = -cos_sim_cubed(cbl_features, batch_sim)
+    #         optimizer.zero_grad()
+    #         loss.backward()
+    #         optimizer.step()
+    #         print("batch ", str(i), " loss: ", loss.detach().cpu().numpy(), end="\r")
+    #         training_loss.append(loss.detach().cpu().numpy())
+    #     avg_training_loss = sum(training_loss)/len(training_loss)
+    #     print("training loss: ", avg_training_loss)
 
-        if args.dataset == 'SetFit/sst2':
-            if args.tune_cbl_only:
-                cbl.eval()
-            else:
-                backbone_cbl.eval()
-            val_loss = []
-            for batch in val_loader:
-                batch_text, batch_sim = batch[0], batch[1]
-                batch_text = {k: v.to(device) for k, v in batch_text.items()}
-                batch_sim = batch_sim.to(device)
-                with torch.no_grad():
-                    if args.tune_cbl_only:
-                        LM_features = preLM(input_ids=batch_text["input_ids"], attention_mask=batch_text["attention_mask"]).last_hidden_state
-                        if args.backbone == 'roberta':
-                            LM_features = LM_features[:, 0, :]
-                        elif args.backbone == 'gpt2':
-                            LM_features = eos_pooling(LM_features, batch_text["attention_mask"])
-                        else:
-                            raise Exception("backbone should be roberta or gpt2")
-                        cbl_features = cbl(LM_features)
-                    else:
-                        cbl_features = backbone_cbl(batch_text)
-                    loss = -cos_sim_cubed(cbl_features, batch_sim)
-                    val_loss.append(loss.detach().cpu().numpy())
-            avg_val_loss = sum(val_loss)/len(val_loss)
-            print("val loss: ", avg_val_loss)
-            if avg_val_loss < best_loss:
-                print("save model")
-                best_loss = avg_val_loss
-                if args.tune_cbl_only:
-                    torch.save(cbl.state_dict(), prefix + model_name + ".pt")
-                else:
-                    torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
-        else:
-            print("save model")
-            if args.tune_cbl_only:
-                torch.save(cbl.state_dict(), prefix + model_name + ".pt")
-            else:
-                torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
+    #     if args.dataset == 'SetFit/sst2':
+    #         if args.tune_cbl_only:
+    #             cbl.eval()
+    #         else:
+    #             backbone_cbl.eval()
+    #         val_loss = []
+    #         for batch in val_loader:
+    #             batch_text, batch_sim = batch[0], batch[1]
+    #             batch_text = {k: v.to(device) for k, v in batch_text.items()}
+    #             batch_sim = batch_sim.to(device)
+    #             with torch.no_grad():
+    #                 if args.tune_cbl_only:
+    #                     LM_features = preLM(input_ids=batch_text["input_ids"], attention_mask=batch_text["attention_mask"]).last_hidden_state
+    #                     if args.backbone == 'roberta':
+    #                         LM_features = LM_features[:, 0, :]
+    #                     elif args.backbone == 'gpt2':
+    #                         LM_features = eos_pooling(LM_features, batch_text["attention_mask"])
+    #                     else:
+    #                         raise Exception("backbone should be roberta or gpt2")
+    #                     cbl_features = cbl(LM_features)
+    #                 else:
+    #                     cbl_features = backbone_cbl(batch_text)
+    #                 loss = -cos_sim_cubed(cbl_features, batch_sim)
+    #                 val_loss.append(loss.detach().cpu().numpy())
+    #         avg_val_loss = sum(val_loss)/len(val_loss)
+    #         print("val loss: ", avg_val_loss)
+    #         if avg_val_loss < best_loss:
+    #             print("save model")
+    #             best_loss = avg_val_loss
+    #             if args.tune_cbl_only:
+    #                 torch.save(cbl.state_dict(), prefix + model_name + ".pt")
+    #             else:
+    #                 torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
+    #     else:
+    #         print("save model")
+    #         if args.tune_cbl_only:
+    #             torch.save(cbl.state_dict(), prefix + model_name + ".pt")
+    #         else:
+    #             torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
 
-    end = time.time()
-    print("time of training CBL:", (end - start) / 3600, "hours")
+    # end = time.time()
+
+    # print("time of training CBL:", (end - start) / 3600, "hours")
