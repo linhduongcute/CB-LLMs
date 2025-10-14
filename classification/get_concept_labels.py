@@ -14,7 +14,7 @@ import time
 parser = argparse.ArgumentParser()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-parser.add_argument("--dataset", type=str, default="SetFit/sst2")
+parser.add_argument("--dataset", type=str, default="ag_news")
 parser.add_argument("--concept_text_sim_model", type=str, default="mpnet", help="mpnet, simcse or angle")
 
 parser.add_argument("--max_length", type=int, default=512)
@@ -179,4 +179,5 @@ if not os.path.exists(prefix):
 
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
+
     np.save(prefix + "concept_labels_val.npy", val_similarity)
