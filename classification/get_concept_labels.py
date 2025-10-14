@@ -179,5 +179,4 @@ if not os.path.exists(prefix):
 
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
-
     np.save(prefix + "concept_labels_val.npy", val_similarity)
