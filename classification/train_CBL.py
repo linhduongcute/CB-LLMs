@@ -14,7 +14,7 @@ import time
 parser = argparse.ArgumentParser()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-parser.add_argument("--dataset", type=str, default="SetFit/sst2")
+parser.add_argument("--dataset", type=str, default="ag_news")
 parser.add_argument("--backbone", type=str, default="roberta", help="roberta or gpt2")
 parser.add_argument('--tune_cbl_only', action=argparse.BooleanOptionalAction)
 parser.add_argument('--automatic_concept_correction', action=argparse.BooleanOptionalAction)
@@ -297,3 +297,4 @@ if __name__ == "__main__":
     # end = time.time()
 
     # print("time of training CBL:", (end - start) / 3600, "hours")
+
