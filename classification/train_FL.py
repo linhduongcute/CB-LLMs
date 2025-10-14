@@ -14,7 +14,7 @@ from utils import normalize, eos_pooling
 parser = argparse.ArgumentParser()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-parser.add_argument("--cbl_path", type=str, default="mpnet_acs/SetFit_sst2/roberta_cbm/cbl.pt")
+parser.add_argument("--cbl_path", type=str, default="mpnet_acs/ag_news/roberta_cbm/cbl.pt")
 parser.add_argument("--batch_size", type=int, default=128)
 parser.add_argument("--saga_epoch", type=int, default=500)
 parser.add_argument("--saga_batch_size", type=int, default=256)
@@ -264,3 +264,4 @@ if __name__ == "__main__":
     torch.save(b_g, prefix + 'b_g' + model_name)
     torch.save(W_g_sparse, prefix + 'W_g_sparse' + model_name)
     torch.save(b_g_sparse, prefix + 'b_g_sparse' + model_name)
+
