@@ -63,6 +63,8 @@ if __name__ == "__main__":
         encoded_dataset = encoded_dataset.remove_columns(['label_text'])
     if args.dataset == 'dbpedia_14':
         encoded_dataset = encoded_dataset.remove_columns(['title'])
+    if args.dataset == 'Duyacquy/Pubmed-20k': 
+        encoded_dataset = encoded_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_dataset = encoded_dataset[:len(encoded_dataset)]
 
     print("creating loader...")
@@ -115,5 +117,6 @@ if __name__ == "__main__":
                 p = LM(batch)
         pred = torch.argmax(p, dim=-1)
         metric.add_batch(predictions=pred, references=batch["label"])
+
 
     print(metric.compute())
