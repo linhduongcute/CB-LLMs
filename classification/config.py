@@ -5,8 +5,8 @@ concepts_from_labels = {"Duyacquy/Pubmed-20k": ["BACKGROUND", "OBJECTIVE", "METH
 class_num = {"Duyacquy/Pubmed-20k": 5, 'SetFit/sst2': 2, 'ag_news': 4, 'yelp_polarity': 2, 'dbpedia_14': 14}
 
 # Config for Roberta-Base baseline
-finetune_epoch = { "Duyacquy/Pubmed-20k": 2, 'SetFit/sst2': 3, 'ag_news': 2, 'yelp_polarity': 2, 'dbpedia_14': 2}
-finetune_mlp_epoch = {"Duyacquy/Pubmed-20k": 5, 'SetFit/sst2': 30, 'ag_news': 5, 'yelp_polarity': 3, 'dbpedia_14': 3}
+finetune_epoch = { "Duyacquy/Pubmed-20k": 1, 'SetFit/sst2': 3, 'ag_news': 2, 'yelp_polarity': 2, 'dbpedia_14': 2}
+finetune_mlp_epoch = {"Duyacquy/Pubmed-20k": 1, 'SetFit/sst2': 30, 'ag_news': 5, 'yelp_polarity': 3, 'dbpedia_14': 3}
 
 # Config for CBM training
 concept_set = {"Duyacquy/Pubmed-20k": concepts.pubmed,'SetFit/sst2': concepts.sst2, 'yelp_polarity': concepts.yelpp, 'ag_news': concepts.agnews, 'dbpedia_14': concepts.dbpedia}
@@ -64,3 +64,4 @@ dataset_config = {
         "label_column": "Y"
     }
 }
+
