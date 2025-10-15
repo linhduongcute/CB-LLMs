@@ -114,6 +114,8 @@ if __name__ == "__main__":
         temp = "According to the news article: '{}', the news article is about '{}' topic. yes or no?"
     elif args.dataset == "dbpedia_14":
         temp = "According to the Wikipedia article: '{}', the Wikipedia article is about '{}' topic. yes or no?"
+    elif args.dataset == "Duyacquy/Pubmed-20k":
+        temp = "According to the PubMed abstract sentence: '{}', this sentence describes the '{}' section of a scientific paper. yes or no?"
     else:
         raise ValueError(f"Unsupported dataset {args.dataset}")
 
