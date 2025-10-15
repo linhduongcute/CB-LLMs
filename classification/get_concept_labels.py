@@ -92,12 +92,10 @@ if args.dataset == 'dbpedia_14':
     encoded_sim_train_dataset = encoded_sim_train_dataset.remove_columns(['title'])
 if args.dataset == 'Duyacquy/Pubmed-20k':
     encoded_sim_train_dataset = encoded_sim_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+    unique_labels = encoded_sim_train_dataset.unique('target')
+    label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+    encoded_sim_train_dataset = encoded_sim_train_dataset.map(lambda e: {"target": label2id[e["target"]]})
 encoded_sim_train_dataset = encoded_sim_train_dataset[:len(encoded_sim_train_dataset)]
-# DEBUG: hiển thị các cột hiện có và một sample (để biết cột string nào còn)
-print("encoded_sim_train_dataset columns:", encoded_sim_train_dataset.column_names)
-print("example row keys/values (first row):")
-print({k: (type(v), v if (isinstance(v, (int, float)) or (isinstance(v, list) and len(v)<20)) else str(v)[:200]) for k, v in encoded_sim_train_dataset[0].items()})
-
 
 if args.dataset == 'SetFit/sst2':
     encoded_sim_val_dataset = val_dataset.map(
@@ -111,6 +109,9 @@ if args.dataset == 'SetFit/sst2':
         encoded_sim_val_dataset = encoded_sim_val_dataset.remove_columns(['title'])
     if args.dataset == 'Duyacquy/Pubmed-20k':
         encoded_sim_val_dataset = encoded_sim_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+        unique_labels = encoded_sim_val_dataset.unique('target')
+        label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+        encoded_sim_val_dataset = encoded_sim_val_dataset.map(lambda e: {"target": label2id[e["target"]]})
     encoded_sim_val_dataset = encoded_sim_val_dataset[:len(encoded_sim_val_dataset)]
 
 encoded_c = tokenizer_sim(concept_set, padding=True, truncation=True, max_length=args.max_length)
@@ -189,6 +190,7 @@ if not os.path.exists(prefix):
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
 
 
 
