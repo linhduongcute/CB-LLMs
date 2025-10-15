@@ -51,7 +51,7 @@ if __name__ == "__main__":
         dataset = parts[1]
     if "sst2" in dataset and "_" in dataset:
         dataset = dataset.replace("_", "/")
-    backbone = args.cbl_path.split("/")[2]
+    backbone = args.cbl_path.split("/")[-2]
     cbl_name = args.cbl_path.split("/")[-1]
     
     print("loading data...")
@@ -160,5 +160,6 @@ if __name__ == "__main__":
     metric.add_batch(predictions=pred, references=encoded_test_dataset["label"])
 
     print(metric.compute())
+
 
 
