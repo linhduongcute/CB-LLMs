@@ -160,7 +160,8 @@ if __name__ == "__main__":
             else:
                 pred = LM(batch)
             optimizer.zero_grad()
-            loss = nn.CrossEntropyLoss(reduction='mean')(pred, batch["label"])
+            label_key = "label" if "label" in batch else "target"
+            loss = nn.CrossEntropyLoss(reduction='mean')(pred, batch[label_key])
             loss.backward()
             optimizer.step()
             print("batch ", str(i), " loss: ", loss.detach().cpu().numpy(), end="\r")
@@ -206,4 +207,5 @@ if __name__ == "__main__":
             else:
 
                 torch.save(LM.state_dict(), prefix + "backbone_finetuned_" + d_name + ".pt")
+
 
