@@ -44,7 +44,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     acs = args.cbl_path.split("/")[0]
-    dataset = args.cbl_path.split("/")[1] if 'sst2' not in args.cbl_path.split("/")[1] else args.cbl_path.split("/")[1].replace('_', '/')
+    parts = args.cbl_path.split("/")
+    if len(parts) >= 3:
+        dataset = f"{parts[1]}/{parts[2]}"
+    else:
+        dataset = parts[1]
+    if "sst2" in dataset and "_" in dataset:
+        dataset = dataset.replace("_", "/")
     backbone = args.cbl_path.split("/")[2]
     cbl_name = args.cbl_path.split("/")[-1]
     
@@ -154,4 +160,5 @@ if __name__ == "__main__":
     metric.add_batch(predictions=pred, references=encoded_test_dataset["label"])
 
     print(metric.compute())
+
 
