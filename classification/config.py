@@ -13,3 +13,54 @@ concept_set = {"Duyacquy/Pubmed-20k": concepts.pubmed,'SetFit/sst2': concepts.ss
 #cbl_epochs = {'SetFit/sst2': 30, 'ag_news': 5, 'yelp_polarity': 3, 'dbpedia_14': 3}
 
 cbl_epochs = { "Duyacquy/Pubmed-20k": 5,'SetFit/sst2': 10, 'ag_news': 3, 'yelp_polarity': 2, 'dbpedia_14': 2}
+
+dataset_config = {
+    "Duyacquy/Single-label-medical-abstract": {
+        "text_column": "medical_abstract",
+        "label_column": "condition_label"
+    },
+    "SetFit/20_newsgroups": {
+        "text_column": "text",
+        "label_column": "label"
+    },
+    "JuliaTsk/yahoo-answers": {
+        "text_column": "question title",
+        "label_column": "class id"
+    },
+    "fancyzhx/ag_news": {
+        "text_column": "text",
+        "label_column": "label"
+    },
+    "fancyzhx/dbpedia_14": {
+        "text_column": "content",
+        "label_column": "label"
+    },
+    "SetFit/sst2": {
+        "text_column": "text",
+        "label_column": "label"
+    },
+    "fancyzhx/yelp_polarity": {
+        "text_column": "text",
+        "label_column": "label"
+    },
+    "Duyacquy/Pubmed-20k": {
+        "text_column": "abstract_text",
+        "label_column": "target"
+    },
+    "Duyacquy/UCI-drug": {
+        "text_column": "review",
+        "label_column": "rating"
+    },
+    "Duyacquy/Legal-text": {
+        "text_column": "case_text",
+        "label_column": "case_outcome"
+    },
+    "Duyacquy/Ecommerce-text": {
+        "text_column": "text",
+        "label_column": "label"
+    },
+    "Duyacquy/Stack-overflow-question": {
+        "text_column": "Text",
+        "label_column": "Y"
+    }
+}
