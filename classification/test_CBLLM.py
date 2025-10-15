@@ -46,10 +46,10 @@ if __name__ == "__main__":
     acs = args.cbl_path.split("/")[0]
     parts = args.cbl_path.split("/")
     parts = args.cbl_path.split("/")
-    if len(parts) >= 3 and ("sst2" in parts[1] or "_" in parts[1] or "_" in parts[2]):
+    if len(parts) >= 5:
         dataset = f"{parts[1]}_{parts[2]}"
     else:
-        dataset = f"{parts[1]}/{parts[2]}" if len(parts) >= 3 else parts[1]
+        dataset = parts[-3]
     backbone = args.cbl_path.split("/")[-2]
     cbl_name = args.cbl_path.split("/")[-1]
     
@@ -159,6 +159,7 @@ if __name__ == "__main__":
     metric.add_batch(predictions=pred, references=encoded_test_dataset["label"])
 
     print(metric.compute())
+
 
 
 
