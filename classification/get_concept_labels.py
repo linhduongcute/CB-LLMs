@@ -93,6 +93,11 @@ if args.dataset == 'dbpedia_14':
 if args.dataset == 'Duyacquy/Pubmed-20k':
     encoded_sim_train_dataset = encoded_sim_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
 encoded_sim_train_dataset = encoded_sim_train_dataset[:len(encoded_sim_train_dataset)]
+# DEBUG: hiển thị các cột hiện có và một sample (để biết cột string nào còn)
+print("encoded_sim_train_dataset columns:", encoded_sim_train_dataset.column_names)
+print("example row keys/values (first row):")
+print({k: (type(v), v if (isinstance(v, (int, float)) or (isinstance(v, list) and len(v)<20)) else str(v)[:200]) for k, v in encoded_sim_train_dataset[0].items()})
+
 
 if args.dataset == 'SetFit/sst2':
     encoded_sim_val_dataset = val_dataset.map(
@@ -184,5 +189,6 @@ if not os.path.exists(prefix):
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
 
 
