@@ -126,7 +126,7 @@ if __name__ == "__main__":
     concept_set = CFG.concept_set[args.dataset]
     print("concept len: ", len(concept_set))
 
-    d_name = args.dataset.replace('/', '_')
+    d_name = args.dataset
     prefix = "./"
     if args.labeling == 'mpnet':
         prefix += "mpnet_acs"
@@ -294,5 +294,6 @@ if __name__ == "__main__":
 
     end = time.time()
     print("time of training CBL:", (end - start) / 3600, "hours")
+
 
 
