@@ -117,3 +117,10 @@ def dbpedia_labels(n):
         return 12
     else:
         return 13
+
+def pubmed_labels(n):
+    boundaries = [30, 60, 90, 120, 150]
+    for i, bound in enumerate(boundaries):
+        if n < bound:
+            return i
+    return len(boundaries)
