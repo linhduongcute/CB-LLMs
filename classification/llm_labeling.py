@@ -62,6 +62,8 @@ elif args.dataset == 'agnews':
     temp = "According to the news article: '{}', the news article is about '{}' topic. yes or no?"
 elif args.dataset == 'dbpedia_14':
     temp = "According to the Wikipedia article: '{}', the Wikipedia article is about '{}' topic. yes or no?"
+elif args.dataset == "Duyacquy/Pubmed-20k":
+    temp = "According to the PubMed abstract sentence: '{}', this sentence describes the '{}' section of a scientific paper. yes or no?"
 
 # ─── Generate Labels for Train ──────────────────────────────────────────────
 print("generating train labels")
@@ -189,3 +191,4 @@ if args.dataset == 'SetFit/sst2':
     np.save(prefix + "concept_labels_val.npy", np.asarray(val_labels))
     with open(prefix + "concept_labels_val.json", "w") as f:
         json.dump(val_logs, f, indent=2)
+
