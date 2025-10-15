@@ -173,23 +173,24 @@ if args.dataset == 'SetFit/sst2':
         val_sim.append(text_features @ concept_features.T)
     val_similarity = torch.cat(val_sim, dim=0).cpu().detach().numpy()
 
-d_name = args.dataset.replace('/', '_')
-prefix = "./"
+d_name = args.dataset
 if args.concept_text_sim_model == 'mpnet':
-    prefix += "mpnet_acs"
+    prefix = f"./mpnet_acs/{d_name}/"
 elif args.concept_text_sim_model == 'simcse':
-    prefix += "simcse_acs"
+    prefix = f"./simcse_acs/{d_name}/"
 elif args.concept_text_sim_model == 'angle':
-    prefix += "angle_acs"
-prefix += "/"
-prefix += d_name
-prefix += "/"
+    prefix = f"./angle_acs/{d_name}/"
+else:
+    raise Exception("concept_text_sim_model should be mpnet, simcse or angle")
+    
 if not os.path.exists(prefix):
     os.makedirs(prefix)
 
-np.save(prefix + "concept_labels_train.npy", train_similarity)
+np.save(os.path.join(prefix, "concept_labels_train.npy"), train_similarity)
+
 if args.dataset == 'SetFit/sst2':
-    np.save(prefix + "concept_labels_val.npy", val_similarity)
+    np.save(os.path.join(prefix, "concept_labels_val.npy"), val_similarity)
+
 
 
 
