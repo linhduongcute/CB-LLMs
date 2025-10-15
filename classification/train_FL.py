@@ -54,7 +54,7 @@ if __name__ == "__main__":
         dataset = parts[1]
     if "sst2" in dataset and "_" in dataset:
         dataset = dataset.replace("_", "/")
-    backbone = args.cbl_path.split("/")[2]
+    backbone = args.cbl_path.split("/")[-2]
     cbl_name = args.cbl_path.split("/")[-1]
     
     print("loading data...")
@@ -285,6 +285,7 @@ if __name__ == "__main__":
     torch.save(b_g, prefix + 'b_g' + model_name)
     torch.save(W_g_sparse, prefix + 'W_g_sparse' + model_name)
     torch.save(b_g_sparse, prefix + 'b_g_sparse' + model_name)
+
 
 
 
