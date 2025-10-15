@@ -68,6 +68,9 @@ if __name__ == "__main__":
         encoded_test_dataset = encoded_test_dataset.remove_columns(['title'])
     if args.dataset == 'Duyacquy/Pubmed-20k':
         encoded_test_dataset = encoded_test_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+        unique_labels = encoded_test_dataset.unique('target')
+        label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+        encoded_test_dataset = encoded_test_dataset.map(lambda e: {"target": label2id[e["target"]]})
     encoded_test_dataset = encoded_test_dataset[:len(encoded_test_dataset)]
 
     print("creating loader...")
@@ -151,3 +154,4 @@ if __name__ == "__main__":
     metric.add_batch(predictions=pred, references=encoded_test_dataset["label"])
 
     print(metric.compute())
+
