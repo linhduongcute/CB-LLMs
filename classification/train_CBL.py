@@ -99,6 +99,8 @@ if __name__ == "__main__":
         encoded_train_dataset = encoded_train_dataset.remove_columns(['label_text'])
     if args.dataset == 'dbpedia_14':
         encoded_train_dataset = encoded_train_dataset.remove_columns(['title'])
+    if args.dataset == 'Duyacquy/Pubmed-20k': 
+        encoded_train_dataset = encoded_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_train_dataset = encoded_train_dataset[:len(encoded_train_dataset)]
 
     if args.dataset == 'SetFit/sst2':
@@ -110,6 +112,8 @@ if __name__ == "__main__":
             encoded_val_dataset = encoded_val_dataset.remove_columns(['label_text'])
         if args.dataset == 'dbpedia_14':
             encoded_val_dataset = encoded_val_dataset.remove_columns(['title'])
+        if args.dataset == 'Duyacquy/Pubmed-20k': 
+            encoded_val_dataset = encoded_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
         encoded_val_dataset = encoded_val_dataset[:len(encoded_val_dataset)]
 
 
@@ -284,3 +288,4 @@ if __name__ == "__main__":
 
     end = time.time()
     print("time of training CBL:", (end - start) / 3600, "hours")
+
