@@ -77,6 +77,8 @@ if __name__ == "__main__":
         encoded_train_dataset = encoded_train_dataset.remove_columns(['label_text'])
     if dataset == 'dbpedia_14':
         encoded_train_dataset = encoded_train_dataset.remove_columns(['title'])
+    if dataset == 'Duyacquy/Pubmed-20k': 
+        encoded_train_dataset = encoded_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_train_dataset = encoded_train_dataset[:len(encoded_train_dataset)]
 
     if dataset == 'SetFit/sst2':
@@ -86,6 +88,8 @@ if __name__ == "__main__":
             encoded_val_dataset = encoded_val_dataset.remove_columns(['label_text'])
         if dataset == 'dbpedia_14':
             encoded_val_dataset = encoded_val_dataset.remove_columns(['title'])
+        if dataset == 'Duyacquy/Pubmed-20k':
+            encoded_val_dataset = encoded_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id', 'line_id', 'abstract_text', 'line_number', 'total_lines'])
         encoded_val_dataset = encoded_val_dataset[:len(encoded_val_dataset)]
 
     encoded_test_dataset = test_dataset.map(lambda e: tokenizer(e[CFG.example_name[dataset]], padding=True, truncation=True, max_length=args.max_length), batched=True, batch_size=len(test_dataset))
@@ -94,6 +98,8 @@ if __name__ == "__main__":
         encoded_test_dataset = encoded_test_dataset.remove_columns(['label_text'])
     if dataset == 'dbpedia_14':
         encoded_test_dataset = encoded_test_dataset.remove_columns(['title'])
+    if dataset == 'Duyacquy/Pubmed-20k': 
+        encoded_test_dataset = encoded_test_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_test_dataset = encoded_test_dataset[:len(encoded_test_dataset)]
 
     print("creating loader...")
@@ -264,4 +270,5 @@ if __name__ == "__main__":
     torch.save(b_g, prefix + 'b_g' + model_name)
     torch.save(W_g_sparse, prefix + 'W_g_sparse' + model_name)
     torch.save(b_g_sparse, prefix + 'b_g_sparse' + model_name)
+
 
