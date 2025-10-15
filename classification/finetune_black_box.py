@@ -67,6 +67,8 @@ if __name__ == "__main__":
         encoded_train_dataset = encoded_train_dataset.remove_columns(['label_text'])
     if args.dataset == 'dbpedia_14':
         encoded_train_dataset = encoded_train_dataset.remove_columns(['title'])
+    if args.dataset == 'Duyacquy/Pubmed-20k': 
+        encoded_train_dataset = encoded_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_train_dataset = encoded_train_dataset[:len(encoded_train_dataset)]
 
     if args.dataset == 'SetFit/sst2':
@@ -78,6 +80,8 @@ if __name__ == "__main__":
             encoded_val_dataset = encoded_val_dataset.remove_columns(['label_text'])
         if args.dataset == 'dbpedia_14':
             encoded_val_dataset = encoded_val_dataset.remove_columns(['title'])
+        if args.dataset == 'Duyacquy/Pubmed-20k': 
+            encoded_val_dataset = encoded_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
         encoded_val_dataset = encoded_val_dataset[:len(encoded_val_dataset)]
 
     print("creating loader...")
@@ -197,4 +201,5 @@ if __name__ == "__main__":
             if args.tune_mlp_only:
                 torch.save(mlp.state_dict(), prefix + "mlp_finetuned_" + d_name + ".pt")
             else:
+
                 torch.save(LM.state_dict(), prefix + "backbone_finetuned_" + d_name + ".pt")
