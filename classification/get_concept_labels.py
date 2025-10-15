@@ -102,6 +102,8 @@ if args.dataset == 'SetFit/sst2':
         encoded_sim_val_dataset = encoded_sim_val_dataset.remove_columns(['label_text'])
     if args.dataset == 'dbpedia_14':
         encoded_sim_val_dataset = encoded_sim_val_dataset.remove_columns(['title'])
+    if args.dataset == 'Duyacquy/Pubmed-20k':
+        encoded_sim_val_dataset = encoded_sim_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
     encoded_sim_val_dataset = encoded_sim_val_dataset[:len(encoded_sim_val_dataset)]
 
 encoded_c = tokenizer_sim(concept_set, padding=True, truncation=True, max_length=args.max_length)
@@ -180,3 +182,4 @@ if not os.path.exists(prefix):
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
