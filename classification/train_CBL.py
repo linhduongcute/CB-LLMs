@@ -101,6 +101,9 @@ if __name__ == "__main__":
         encoded_train_dataset = encoded_train_dataset.remove_columns(['title'])
     if args.dataset == 'Duyacquy/Pubmed-20k': 
         encoded_train_dataset = encoded_train_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+        unique_labels = encoded_train_dataset.unique('target')
+        label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+        encoded_train_dataset = encoded_train_dataset.map(lambda e: {"target": label2id[e["target"]]})
     encoded_train_dataset = encoded_train_dataset[:len(encoded_train_dataset)]
 
     if args.dataset == 'SetFit/sst2':
@@ -114,6 +117,9 @@ if __name__ == "__main__":
             encoded_val_dataset = encoded_val_dataset.remove_columns(['title'])
         if args.dataset == 'Duyacquy/Pubmed-20k': 
             encoded_val_dataset = encoded_val_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+            unique_labels = encoded_val_dataset.unique('target')
+            label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+            encoded_val_dataset = encoded_val_dataset.map(lambda e: {"target": label2id[e["target"]]})
         encoded_val_dataset = encoded_val_dataset[:len(encoded_val_dataset)]
 
 
@@ -288,4 +294,5 @@ if __name__ == "__main__":
 
     end = time.time()
     print("time of training CBL:", (end - start) / 3600, "hours")
+
 
