@@ -65,6 +65,9 @@ if __name__ == "__main__":
         encoded_dataset = encoded_dataset.remove_columns(['title'])
     if args.dataset == 'Duyacquy/Pubmed-20k': 
         encoded_dataset = encoded_dataset.remove_columns(['Unnamed: 0', 'abstract_id','line_id', 'line_number', 'total_lines'])
+        unique_labels = encoded_dataset.unique('target')
+        label2id = {label: idx for idx, label in enumerate(sorted(unique_labels))}
+        encoded_dataset = encoded_dataset.map(lambda e: {"target": label2id[e["target"]]})
     encoded_dataset = encoded_dataset[:len(encoded_dataset)]
 
     print("creating loader...")
@@ -120,3 +123,4 @@ if __name__ == "__main__":
 
 
     print(metric.compute())
+
