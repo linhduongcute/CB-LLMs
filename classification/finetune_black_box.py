@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     print("start training...")
     best_loss = float('inf')
-    d_name = args.dataset.replace('/', '_')
+    d_name = args.dataset
     prefix = "./baseline_models/"
     if args.backbone == 'roberta':
         prefix += "roberta"
@@ -207,5 +207,6 @@ if __name__ == "__main__":
             else:
 
                 torch.save(LM.state_dict(), prefix + "backbone_finetuned_" + d_name + ".pt")
+
 
 
