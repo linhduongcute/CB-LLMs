@@ -10,6 +10,8 @@ import config as CFG
 from modules import CBL, RobertaCBL, GPT2CBL
 from utils import cos_sim_cubed, get_labels, eos_pooling
 import time
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 parser = argparse.ArgumentParser()
 
@@ -285,10 +287,9 @@ if __name__ == "__main__":
     end = time.time()
 
     print("time of training CBL:", (end - start) / 3600, "hours")
-    import matplotlib.pyplot as plt
-    import seaborn as sns
     
-    print("\n🔍 Collecting CBL projection statistics...")
+    
+    print("\n Collecting CBL projection statistics...")
     
     # Chuyển mô hình sang eval
     if args.tune_cbl_only:
@@ -316,31 +317,30 @@ if __name__ == "__main__":
     
             all_projections.append(proj.cpu().numpy())
     
-    # Gộp toàn bộ projection lại thành 1 mảng numpy
-    all_projections = np.concatenate(all_projections, axis=0)  # shape: (N_samples, n_concepts)
-    
-    # Tính mean, variance, std theo từng chiều (neuron)
-    mean_per_neuron = np.mean(all_projections, axis=0)
-    var_per_neuron = np.var(all_projections, axis=0)
-    std_per_neuron = np.std(all_projections, axis=0)
-    
-    # Thống kê tổng quát
-    print(f" Tổng số neurons (concept dim): {all_projections.shape[1]}")
-    print(f"Mean trung bình trên toàn bộ neurons: {mean_per_neuron.mean():.6f}")
-    print(f"Variance trung bình: {var_per_neuron.mean():.6f}")
-    print(f"Std trung bình: {std_per_neuron.mean():.6f}")
-    
-    # Vẽ biểu đồ phân phối của mean và variance trên neurons
-    plt.figure(figsize=(12,5))
-    plt.subplot(1,2,1)
-    sns.histplot(mean_per_neuron, kde=True, bins=30)
-    plt.title("Phân phối Mean trên từng neuron (CBL projection)")
-    plt.xlabel("Mean value")
-    
-    plt.subplot(1,2,2)
-    sns.histplot(var_per_neuron, kde=True, bins=30)
-    plt.title("Phân phối Variance trên từng neuron (CBL projection)")
-    plt.xlabel("Variance value")
-    
-    plt.tight_layout()
-    plt.savefig("cbl_projection_distribution.png")
+    all_projections = np.concatenate(all_projections, axis=0)
+
+# Giới hạn giá trị trong khoảng [-1, 1] (để trực quan tương tự similarity)
+all_projections = np.clip(all_projections, -1, 1)
+
+# Tính thống kê tổng thể trên tất cả giá trị
+mean_val = np.mean(all_projections)
+var_val = np.var(all_projections)
+std_val = np.std(all_projections)
+
+print(" Thống kê CBL projection (toàn bộ giá trị):")
+print(f"- Mean: {mean_val:.6f}")
+print(f"- Variance: {var_val:.6f}")
+print(f"- Std: {std_val:.6f}")
+print(f"- Tổng số neuron (chiều): {all_projections.shape[1]}")
+
+# Flatten để gom toàn bộ giá trị projection của mọi neuron và mọi text
+flat_proj = all_projections.flatten()
+
+plt.figure(figsize=(10,5))
+sns.histplot(flat_proj, bins=100, kde=True)
+plt.title("Phân phối giá trị CBL Projection")
+plt.xlabel("Giá trị projection (trong [-1, 1])")
+plt.ylabel("Số lượng neurons")
+plt.xlim(-1, 1)
+plt.tight_layout()
+plt.savefig("cbl_projection_distribution.png")
