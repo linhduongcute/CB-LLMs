@@ -283,4 +283,64 @@ if __name__ == "__main__":
                 torch.save(backbone_cbl.state_dict(), prefix + model_name + ".pt")
 
     end = time.time()
+
     print("time of training CBL:", (end - start) / 3600, "hours")
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    
+    print("\n🔍 Collecting CBL projection statistics...")
+    
+    # Chuyển mô hình sang eval
+    if args.tune_cbl_only:
+        cbl.eval()
+    else:
+        backbone_cbl.eval()
+    
+    all_projections = []
+    
+    with torch.no_grad():
+        for batch in train_loader:
+            batch_text, batch_sim = batch[0], batch[1]
+            batch_text = {k: v.to(device) for k, v in batch_text.items()}
+    
+            # Lấy features từ backbone
+            if args.tune_cbl_only:
+                LM_features = preLM(input_ids=batch_text["input_ids"], attention_mask=batch_text["attention_mask"]).last_hidden_state
+                if args.backbone == 'roberta':
+                    LM_features = LM_features[:, 0, :]
+                elif args.backbone == 'gpt2':
+                    LM_features = eos_pooling(LM_features, batch_text["attention_mask"])
+                proj = cbl(LM_features)
+            else:
+                proj = backbone_cbl(batch_text)
+    
+            all_projections.append(proj.cpu().numpy())
+    
+    # Gộp toàn bộ projection lại thành 1 mảng numpy
+    all_projections = np.concatenate(all_projections, axis=0)  # shape: (N_samples, n_concepts)
+    
+    # Tính mean, variance, std theo từng chiều (neuron)
+    mean_per_neuron = np.mean(all_projections, axis=0)
+    var_per_neuron = np.var(all_projections, axis=0)
+    std_per_neuron = np.std(all_projections, axis=0)
+    
+    # Thống kê tổng quát
+    print(f" Tổng số neurons (concept dim): {all_projections.shape[1]}")
+    print(f"Mean trung bình trên toàn bộ neurons: {mean_per_neuron.mean():.6f}")
+    print(f"Variance trung bình: {var_per_neuron.mean():.6f}")
+    print(f"Std trung bình: {std_per_neuron.mean():.6f}")
+    
+    # Vẽ biểu đồ phân phối của mean và variance trên neurons
+    plt.figure(figsize=(12,5))
+    plt.subplot(1,2,1)
+    sns.histplot(mean_per_neuron, kde=True, bins=30)
+    plt.title("Phân phối Mean trên từng neuron (CBL projection)")
+    plt.xlabel("Mean value")
+    
+    plt.subplot(1,2,2)
+    sns.histplot(var_per_neuron, kde=True, bins=30)
+    plt.title("Phân phối Variance trên từng neuron (CBL projection)")
+    plt.xlabel("Variance value")
+    
+    plt.tight_layout()
+    plt.savefig("cbl_projection_distribution.png")
