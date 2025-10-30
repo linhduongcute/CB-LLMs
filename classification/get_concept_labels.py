@@ -145,6 +145,63 @@ train_similarity = torch.cat(train_sim, dim=0).cpu().detach().numpy()
 end = time.time()
 print("time of concept scoring:", (end-start)/3600, "hours")
 
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# === 1️⃣ Similarity toàn bộ (global) ===
+all_sim_values = train_similarity.flatten()
+
+# === 2️⃣ Similarity cùng nhãn ===
+if 'label' in train_dataset.column_names:
+    labels = np.array(train_dataset['label'])
+    # ánh xạ concept → label tương ứng (ví dụ từ CFG.concept_label hoặc bạn tự tạo)
+    concept_labels = CFG.label_of_concept[args.dataset]  # danh sách label cho mỗi concept
+    concept_labels = np.array(concept_labels)
+
+    same_label_sims = []
+    for i, lbl in enumerate(labels):
+        same_concepts_idx = np.where(concept_labels == lbl)[0]
+        if len(same_concepts_idx) > 0:
+            same_label_sims.append(train_similarity[i, same_concepts_idx])
+    same_label_sims = np.concatenate(same_label_sims)
+else:
+    print("⚠ Dataset không có label, bỏ qua phần similarity cùng nhãn.")
+    same_label_sims = np.array([])
+
+# === 3️⃣ Kiểm tra NaN ===
+print(f"✅ NaN trong similarity (toàn bộ): {np.isnan(all_sim_values).sum()}")
+print(f"✅ NaN trong similarity (cùng nhãn): {np.isnan(same_label_sims).sum()}")
+
+# === 4️⃣ Vẽ biểu đồ ===
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.hist(all_sim_values, bins=50, range=(-1, 1), alpha=0.7, edgecolor='black')
+plt.title("Phân phối similarity (toàn bộ text–concept)")
+plt.xlabel("Cosine similarity (-1 → 1)")
+plt.ylabel("Số lượng cặp text–concept")
+
+plt.subplot(1, 2, 2)
+plt.hist(same_label_sims, bins=50, range=(-1, 1), alpha=0.7, color='orange', edgecolor='black')
+plt.title("Phân phối similarity (text–concept cùng nhãn)")
+plt.xlabel("Cosine similarity (-1 → 1)")
+plt.ylabel("Số lượng cặp text–concept")
+
+plt.tight_layout()
+plt.show()
+
+# === 5️⃣ In thống kê tổng quát ===
+def summarize(name, sims):
+    print(f"Mean: {np.mean(sims):.6f}")
+    print(f"Variance: {np.var(sims):.6f}")
+    print(f"Std: {np.std(sims):.6f}")
+
+summarize("Toàn bộ text–concept", all_sim_values)
+if len(same_label_sims) > 0:
+    summarize("Text–concept cùng nhãn", same_label_sims)
+
+
 if args.dataset == 'SetFit/sst2':
     val_sim = []
     for batch_sim in val_sim_loader:
@@ -179,4 +236,5 @@ if not os.path.exists(prefix):
 
 np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
+
     np.save(prefix + "concept_labels_val.npy", val_similarity)
