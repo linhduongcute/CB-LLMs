@@ -7,7 +7,7 @@ from datasets import load_dataset
 import config as CFG
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 from peft import PeftModel, PeftConfig
-from utils import mean_pooling, decorate_dataset, decorate_concepts
+import utils
 import sys
 import time
 
@@ -149,59 +149,79 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# === 1️⃣ Similarity toàn bộ (global) ===
-all_sim_values = train_similarity.flatten()
+num_concepts = len(concept_set)
+num_texts = len(train_dataset)
+labels = np.array(train_dataset['label'])
 
-# === 2️⃣ Similarity cùng nhãn ===
-if 'label' in train_dataset.column_names:
-    labels = np.array(train_dataset['label'])
-    # ánh xạ concept → label tương ứng (ví dụ từ CFG.concept_label hoặc bạn tự tạo)
-    concept_labels = CFG.label_of_concept[args.dataset]  # danh sách label cho mỗi concept
-    concept_labels = np.array(concept_labels)
+# ========================
+# Tính trung bình cosine similarity cho mỗi concept
+# ========================
+mean_sim_per_concept = train_similarity.mean(axis=0)  # (num_concepts, )
 
-    same_label_sims = []
-    for i, lbl in enumerate(labels):
-        same_concepts_idx = np.where(concept_labels == lbl)[0]
-        if len(same_concepts_idx) > 0:
-            same_label_sims.append(train_similarity[i, same_concepts_idx])
-    same_label_sims = np.concatenate(same_label_sims)
-else:
-    print("⚠ Dataset không có label, bỏ qua phần similarity cùng nhãn.")
-    same_label_sims = np.array([])
+# ========================
+# Trường hợp "cùng nhãn"
+# ========================
+concept_labels = np.array([utils.get_labels(i, args.dataset) for i in range(num_concepts)])
 
-# === 3️⃣ Kiểm tra NaN ===
-print(f"✅ NaN trong similarity (toàn bộ): {np.isnan(all_sim_values).sum()}")
-print(f"✅ NaN trong similarity (cùng nhãn): {np.isnan(same_label_sims).sum()}")
+same_label_mean = []
+for c_idx, c_lbl in enumerate(concept_labels):
+    text_idx = np.where(labels == c_lbl)[0]
+    if len(text_idx) > 0:
+        same_label_mean.append(train_similarity[text_idx, c_idx].mean())
+    else:
+        same_label_mean.append(np.nan)
+same_label_mean = np.array(same_label_mean)
 
-# === 4️⃣ Vẽ biểu đồ ===
+# ========================
+# Kiểm tra NaN
+# ========================
+print(f"🔍 NaN trong mean_sim_per_concept: {np.isnan(mean_sim_per_concept).sum()}")
+print(f"🔍 NaN trong same_label_mean: {np.isnan(same_label_mean).sum()}")
+
+# ========================
+# Thống kê dữ liệu
+# ========================
+print(f"\n📊 Số lượng concept: {num_concepts}")
+print(f"📊 Tổng số text: {num_texts}")
+unique, counts = np.unique(labels, return_counts=True)
+for u, c in zip(unique, counts):
+    print(f" - Nhãn {u}: {c} mẫu")
+
+# ========================
+# Vẽ biểu đồ phân bố mean similarity (theo concept)
+# ========================
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
-plt.hist(all_sim_values, bins=50, range=(-1, 1), alpha=0.7, edgecolor='black')
-plt.title("Phân phối similarity (toàn bộ text–concept)")
-plt.xlabel("Cosine similarity (-1 → 1)")
-plt.ylabel("Số lượng cặp text–concept")
+plt.hist(mean_sim_per_concept, bins=30, range=(-1, 1),
+         color='skyblue', edgecolor='black', alpha=0.7)
+plt.title("Phân bố mean similarity của tất cả concepts")
+plt.xlabel("Mean cosine similarity (-1 → 1)")
+plt.ylabel("Số lượng concept")
 
 plt.subplot(1, 2, 2)
-plt.hist(same_label_sims, bins=50, range=(-1, 1), alpha=0.7, color='orange', edgecolor='black')
-plt.title("Phân phối similarity (text–concept cùng nhãn)")
-plt.xlabel("Cosine similarity (-1 → 1)")
-plt.ylabel("Số lượng cặp text–concept")
+plt.hist(same_label_mean[~np.isnan(same_label_mean)], bins=30, range=(-1, 1),
+         color='tomato', edgecolor='black', alpha=0.7)
+plt.title("Phân bố mean similarity của concepts (chỉ cùng nhãn)")
+plt.xlabel("Mean cosine similarity (-1 → 1)")
+plt.ylabel("Số lượng concept")
 
 plt.tight_layout()
 plt.show()
 
-# === 5️⃣ In thống kê tổng quát ===
+# ========================
+# In thống kê tổng quát
+# ========================
 def summarize(name, sims):
-    print(f"Mean: {np.mean(sims):.6f}")
-    print(f"Variance: {np.var(sims):.6f}")
-    print(f"Std: {np.std(sims):.6f}")
+    sims = sims[~np.isnan(sims)]
+    print(f"\n📈 {name}")
+    print(f"  Số concept: {len(sims)}")
+    print(f"  Mean: {np.mean(sims):.6f}")
+    print(f"  Variance: {np.var(sims):.6f}")
+    print(f"  Std: {np.std(sims):.6f}")
 
-summarize("Toàn bộ text–concept", all_sim_values)
-if len(same_label_sims) > 0:
-    summarize("Text–concept cùng nhãn", same_label_sims)
-
-
+summarize("Toàn bộ concepts", mean_sim_per_concept)
+summarize("Concepts cùng nhãn", same_label_mean)
 if args.dataset == 'SetFit/sst2':
     val_sim = []
     for batch_sim in val_sim_loader:
@@ -238,3 +258,4 @@ np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
 
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
