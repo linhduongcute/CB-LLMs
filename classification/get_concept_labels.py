@@ -161,7 +161,7 @@ mean_sim_per_concept = train_similarity.mean(axis=0)  # (num_concepts, )
 # ========================
 # Trường hợp "cùng nhãn"
 # ========================
-concept_labels = np.array([utils.get_labels(i, args.dataset) for i in range(num_concepts)])
+concept_labels = np.array([get_labels(i, args.dataset) for i in range(num_concepts)])
 
 same_label_mean = []
 for c_idx, c_lbl in enumerate(concept_labels):
@@ -172,11 +172,6 @@ for c_idx, c_lbl in enumerate(concept_labels):
         same_label_mean.append(np.nan)
 same_label_mean = np.array(same_label_mean)
 
-# ========================
-# Kiểm tra NaN
-# ========================
-print(f"🔍 NaN trong mean_sim_per_concept: {np.isnan(mean_sim_per_concept).sum()}")
-print(f"🔍 NaN trong same_label_mean: {np.isnan(same_label_mean).sum()}")
 
 # ========================
 # Thống kê dữ liệu
@@ -258,5 +253,6 @@ np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
 
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
 
 
