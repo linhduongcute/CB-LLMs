@@ -202,7 +202,9 @@ plt.xlabel("Mean cosine similarity (-1 → 1)")
 plt.ylabel("Số lượng concept")
 
 plt.tight_layout()
-plt.show()
+plt.savefig("concept_similarity.png")
+print("Đã lưu biểu đồ vào concept_similarity.png")
+
 
 # ========================
 # In thống kê tổng quát
@@ -253,6 +255,7 @@ np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
 
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
 
 
 
