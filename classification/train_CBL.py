@@ -322,6 +322,10 @@ if __name__ == "__main__":
 # Giới hạn giá trị trong khoảng [-1, 1] (để trực quan tương tự similarity)
 all_projections = np.clip(all_projections, -1, 1)
 
+proj_min = np.min(all_projections)
+proj_max = np.max(all_projections)
+all_projections = 2 * (all_projections - proj_min) / (proj_max - proj_min) - 1
+
 # Tính thống kê tổng thể trên tất cả giá trị
 mean_val = np.mean(all_projections)
 var_val = np.var(all_projections)
@@ -344,3 +348,4 @@ plt.ylabel("Số lượng neurons")
 plt.xlim(-1, 1)
 plt.tight_layout()
 plt.savefig("cbl_projection_distribution.png")
+
