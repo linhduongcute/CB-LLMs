@@ -318,10 +318,11 @@ if __name__ == "__main__":
             all_projections.append(proj.cpu().numpy())
     
     all_projections = np.concatenate(all_projections, axis=0)
+    
+    all_projections = torch.tensor(all_projections)
+    all_projections = F.normalize(all_projections, p=2, dim=1)
+    all_projections = all_projections.cpu().numpy()
 
-    proj_min = np.min(all_projections)
-    proj_max = np.max(all_projections)
-    all_projections = 2 * (all_projections - proj_min) / (proj_max - proj_min) - 1
     
     # Tính thống kê tổng thể trên tất cả giá trị
     mean_val = np.mean(all_projections)
@@ -347,3 +348,4 @@ if __name__ == "__main__":
     plt.savefig("cbl_projection_distribution.png")
     
     
+
