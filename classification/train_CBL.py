@@ -323,8 +323,6 @@ if __name__ == "__main__":
     all_projections = F.normalize(all_projections, p=2, dim=1)
     all_projections = all_projections.cpu().numpy()
 
-    
-    # Tính thống kê tổng thể trên tất cả giá trị
     mean_val = np.mean(all_projections)
     var_val = np.var(all_projections)
     std_val = np.std(all_projections)
@@ -334,10 +332,10 @@ if __name__ == "__main__":
     print(f"- Variance: {var_val:.6f}")
     print(f"- Std: {std_val:.6f}")
     print(f"- Tổng số neuron (chiều): {all_projections.shape[1]}")
-    
-    # Flatten để gom toàn bộ giá trị projection của mọi neuron và mọi text
+
     flat_proj = all_projections.flatten()
-    
+
+    import matplotlib.pyplot as plt
     plt.figure(figsize=(10,5))
     sns.histplot(flat_proj, bins=100, kde=True)
     plt.title("Phân phối giá trị CBL Projection")
@@ -348,4 +346,5 @@ if __name__ == "__main__":
     plt.savefig("cbl_projection_distribution.png")
     
     
+
 
