@@ -155,9 +155,6 @@ labels = np.array(train_dataset['label'])
 
 mean_sim_per_concept = train_similarity.mean(axis=0) 
 
-# ========================
-# Trường hợp "cùng nhãn"
-# ========================
 concept_labels = np.array([get_labels(i, args.dataset) for i in range(num_concepts)])
 
 same_label_mean = []
@@ -169,19 +166,12 @@ for c_idx, c_lbl in enumerate(concept_labels):
         same_label_mean.append(np.nan)
 same_label_mean = np.array(same_label_mean)
 
-
-# ========================
-# Thống kê dữ liệu
-# ========================
 print(f"\n Số lượng concept: {num_concepts}")
 print(f" Tổng số text: {num_texts}")
 unique, counts = np.unique(labels, return_counts=True)
 for u, c in zip(unique, counts):
     print(f" - Nhãn {u}: {c} mẫu")
 
-# ========================
-# Vẽ biểu đồ phân bố mean similarity (theo concept)
-# ========================
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
@@ -202,10 +192,6 @@ plt.tight_layout()
 plt.savefig("concept_similarity.png")
 print("Đã lưu biểu đồ vào concept_similarity.png")
 
-
-# ========================
-# In thống kê tổng quát
-# ========================
 def summarize(name, sims):
     sims = sims[~np.isnan(sims)]
     print(f"\n {name}")
@@ -297,6 +283,7 @@ np.save(prefix + "concept_labels_train.npy", train_similarity)
 if args.dataset == 'SetFit/sst2':
 
     np.save(prefix + "concept_labels_val.npy", val_similarity)
+
 
 
 
