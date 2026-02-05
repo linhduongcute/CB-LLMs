@@ -32,8 +32,8 @@ if __name__ == "__main__":
     print("concept len: ", len(concept_set))
 
     print("preparing backbone")
-    peft_path = "from_pretained_llama3_lora_cbm/" + args.dataset.replace('/', '_') + "/llama3"
-    cbl_path = "from_pretained_llama3_lora_cbm/" + args.dataset.replace('/', '_') + "/cbl.pt"
+    peft_path = "from_pretained_llama3_lora_cbm/" + args.dataset.replace('/', '_') + "/llama3_epoch_2"
+    cbl_path = "from_pretained_llama3_lora_cbm/" + args.dataset.replace('/', '_') + "/cbl_epoch_2.pt"
     preLM = LlamaModel.from_pretrained('meta-llama/Meta-Llama-3-8B', torch_dtype=torch.bfloat16).to(device)
     preLM.load_adapter(peft_path)
     preLM.eval()
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         print("example", str(i), end="\r")
         with torch.no_grad():
             text_ids, _ = cbl.generate(input_ids, preLM)
-            pred.append(tokenizer.decode(text_ids[0]))
+            pred.append(tokenizer.decode(text_ids[0], skip_special_tokens=True))
     perplexity.add_batch(predictions=pred)
 
     del preLM
