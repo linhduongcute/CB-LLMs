@@ -5,7 +5,8 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 from transformers import RobertaTokenizerFast, RobertaModel, GPT2TokenizerFast, GPT2Model
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 import config as CFG
 from modules import CBL, RobertaCBL, GPT2CBL
 from utils import cos_sim_cubed, get_labels, eos_pooling

@@ -4,7 +4,8 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 import config as CFG
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 from transformers import LlamaConfig, LlamaModel, AutoTokenizer
 from modules import CBL
 

@@ -2,7 +2,7 @@ import argparse
 import os
 import torch
 from transformers import RobertaTokenizerFast, RobertaModel, GPT2TokenizerFast, GPT2Model
-from datasets import load_dataset
+from data_utils import load_dataset
 import evaluate
 import config as CFG
 from modules import Roberta_Baseline, GPT2_Baseline, MLP

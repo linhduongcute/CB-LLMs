@@ -4,7 +4,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import config as CFG
 import numpy as np
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 from transformers.utils import logging
 import json
 
@@ -62,6 +63,12 @@ elif args.dataset == 'agnews':
     temp = "According to the news article: '{}', the news article is about '{}' topic. yes or no?"
 elif args.dataset == 'dbpedia_14':
     temp = "According to the Wikipedia article: '{}', the Wikipedia article is about '{}' topic. yes or no?"
+elif args.dataset == 'Duyacquy/UCI_drug':
+    temp = "According to the drug review: '{}', does the review express '{}'? yes or no?"
+elif args.dataset == 'Duyacquy/Ecommerce_text':
+    temp = "According to the product description: '{}', does the product match '{}'? yes or no?"
+else:
+    raise ValueError(f"Unsupported dataset {args.dataset}")
 
 # ─── Generate Labels for Train ──────────────────────────────────────────────
 print("generating train labels")

@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 from transformers import RobertaTokenizerFast, RobertaModel, GPT2TokenizerFast, GPT2Model
-from datasets import load_dataset
+from data_utils import dataset_from_path_name, load_dataset
 import config as CFG
 from modules import CBL, RobertaCBL, GPT2CBL
 from utils import normalize, get_labels, eos_pooling
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     acs = args.cbl_path.split("/")[0]
-    dataset = args.cbl_path.split("/")[1] if 'sst2' not in args.cbl_path.split("/")[1] else args.cbl_path.split("/")[1].replace('_', '/')
+    dataset = dataset_from_path_name(args.cbl_path.split("/")[1])
     backbone = args.cbl_path.split("/")[2]
     cbl_name = args.cbl_path.split("/")[-1]
     

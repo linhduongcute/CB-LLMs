@@ -1,4 +1,4 @@
-example_name = {'SetFit/sst2': 'text', 'ag_news': 'text', 'yelp_polarity': 'text', 'dbpedia_14': 'content'}
-concepts_from_labels = {'SetFit/sst2': ["negative","positive"], 'yelp_polarity': ["negative","positive"], 'ag_news': ["world", "sports", "business", "technology"], 'dbpedia_14': ["company","education","artist","athlete","office","transportation","building","natural","village","animal","plant","album","film","written"]}
-class_num = {'SetFit/sst2': 2, 'ag_news': 4, 'yelp_polarity': 2, 'dbpedia_14': 14}
-epoch = {'SetFit/sst2': 3, 'ag_news': 1, 'yelp_polarity': 1, 'dbpedia_14': 1}
+example_name = {'SetFit/sst2': 'text', 'ag_news': 'text', 'yelp_polarity': 'text', 'dbpedia_14': 'content', 'Duyacquy/UCI_drug': 'review', 'Duyacquy/Ecommerce_text': 'text'}
+concepts_from_labels = {'SetFit/sst2': ["negative","positive"], 'yelp_polarity': ["negative","positive"], 'ag_news': ["world", "sports", "business", "technology"], 'dbpedia_14': ["company","education","artist","athlete","office","transportation","building","natural","village","animal","plant","album","film","written"], 'Duyacquy/UCI_drug': ["rating 1", "rating 5", "rating 10"], 'Duyacquy/Ecommerce_text': ["Household", "Electronics", "Clothing & Accessories", "Books"]}
+class_num = {'SetFit/sst2': 2, 'ag_news': 4, 'yelp_polarity': 2, 'dbpedia_14': 14, 'Duyacquy/UCI_drug': 3, 'Duyacquy/Ecommerce_text': 4}
+epoch = {'SetFit/sst2': 3, 'ag_news': 1, 'yelp_polarity': 1, 'dbpedia_14': 1, 'Duyacquy/UCI_drug': 1, 'Duyacquy/Ecommerce_text': 1}

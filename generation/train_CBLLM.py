@@ -3,7 +3,8 @@ import os
 import torch
 import torch.nn.functional as F
 import numpy as np
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 import config as CFG
 from transformers import LlamaConfig, LlamaModel, AutoTokenizer
 from peft import LoraConfig, TaskType, get_peft_model
@@ -50,10 +51,17 @@ if __name__ == "__main__":
         val_dataset = load_dataset(args.dataset, split='validation')
 
     if args.dataset != 'SetFit/sst2':
-        d_list = []
+        class_datasets = []
         for i in range(CFG.class_num[args.dataset]):
-            d_list.append(
-                train_dataset.filter(lambda e: e['label'] == i).select(range(100000 // CFG.class_num[args.dataset])))
+            class_datasets.append(train_dataset.filter(lambda e: e['label'] == i))
+        samples_per_class = min(
+            100000 // CFG.class_num[args.dataset],
+            *(len(class_dataset) for class_dataset in class_datasets),
+        )
+        d_list = [
+            class_dataset.select(range(samples_per_class))
+            for class_dataset in class_datasets
+        ]
         train_dataset = concatenate_datasets(d_list)
 
     if args.dataset == 'ag_news':

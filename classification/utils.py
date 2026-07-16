@@ -55,6 +55,8 @@ def normalize(x, d=-1, mean=None, std=None):
     return x, x_mean, x_std
 
 def get_labels(n, d):
+    if d in ('Duyacquy/UCI_drug', 'Duyacquy/Ecommerce_text'):
+        return n
     if d == 'SetFit/sst2':
         return sst2_labels(n)
     if d == 'yelp_polarity':

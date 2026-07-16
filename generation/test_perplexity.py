@@ -4,7 +4,8 @@ import torch
 import numpy as np
 import config as CFG
 from transformers import LlamaConfig, LlamaModel, AutoTokenizer, RobertaTokenizerFast
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 from modules import CBL, Roberta_classifier
 from utils import eos_pooling
 import evaluate

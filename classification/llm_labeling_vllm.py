@@ -3,7 +3,8 @@ import os
 import json
 import numpy as np
 import torch
-from datasets import load_dataset, concatenate_datasets
+from datasets import concatenate_datasets
+from data_utils import load_dataset
 from transformers import AutoTokenizer
 from transformers.utils import logging
 from vllm import LLM, SamplingParams
@@ -114,6 +115,10 @@ if __name__ == "__main__":
         temp = "According to the news article: '{}', the news article is about '{}' topic. yes or no?"
     elif args.dataset == "dbpedia_14":
         temp = "According to the Wikipedia article: '{}', the Wikipedia article is about '{}' topic. yes or no?"
+    elif args.dataset == "Duyacquy/UCI_drug":
+        temp = "According to the drug review: '{}', does the review express '{}'? yes or no?"
+    elif args.dataset == "Duyacquy/Ecommerce_text":
+        temp = "According to the product description: '{}', does the product match '{}'? yes or no?"
     else:
         raise ValueError(f"Unsupported dataset {args.dataset}")
 

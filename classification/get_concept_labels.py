@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 import numpy as np
-from datasets import load_dataset
+from data_utils import load_dataset
 import config as CFG
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 from peft import PeftModel, PeftConfig
